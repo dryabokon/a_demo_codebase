@@ -1,5 +1,5 @@
 #----AAA---
-print("hello world")\nfrom datetime import datetime\nprint(f"Current time: {datetime.now()}")
+print("hello world")
 import pandas as pd
 filename_in = "./input/dataset_titanic.csv"
 folder_out = "./output/"
