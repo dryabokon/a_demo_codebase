@@ -1,3 +1,4 @@
+print("hello world")
 import pandas as pd
 #filename_in = "./input/dataset_titanic.csv"
 filename_in = "../input/dataset_titanic.csv"
@@ -26,3 +27,4 @@ if __name__ == '__main__':
     if MLFlower.is_available:
         dct_metrics = dict(zip(df_metrics[df_metrics.columns[0]].values, df_metrics['train'].values))
         MLFlower.save_experiment(config.experiment_name,params=params,metrics=dct_metrics,artifacts=[])
+
