@@ -1,7 +1,9 @@
 print("hello world")
+from datetime import datetime
+print(f"Current time: {datetime.now()}")
 import pandas as pd
 #filename_in = "./input/dataset_titanic.csv"
-filename_in = "../input/dataset_titanic.csv"
+filename_in = "./input/dataset_titanic.csv"
 folder_out = "./output/"
 # ----------------------------------------------------------------------------------------------------------------------
 import config
@@ -19,6 +21,8 @@ MLFlower = tools_MLflower.MLFlower(config.host_mlflow, config.port_mlflow)
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
+    filename_in = config.patch_path(filename_in)
+
     df = pd.read_csv(filename_in,sep='\t')
     df = df.drop('alive', axis=1)
     df = tools_DF.hash_categoricals(df)
@@ -27,4 +31,5 @@ if __name__ == '__main__':
     if MLFlower.is_available:
         dct_metrics = dict(zip(df_metrics[df_metrics.columns[0]].values, df_metrics['train'].values))
         MLFlower.save_experiment(config.experiment_name,params=params,metrics=dct_metrics,artifacts=[])
+
 
