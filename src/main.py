@@ -1,8 +1,5 @@
 print("hello world")
-from datetime import datetime
-print(f"Current time: {datetime.now()}")
 import pandas as pd
-#filename_in = "./input/dataset_titanic.csv"
 filename_in = "./input/dataset_titanic.csv"
 folder_out = "./output/"
 # ----------------------------------------------------------------------------------------------------------------------
@@ -31,5 +28,6 @@ if __name__ == '__main__':
     if MLFlower.is_available:
         dct_metrics = dict(zip(df_metrics[df_metrics.columns[0]].values, df_metrics['train'].values))
         MLFlower.save_experiment(config.experiment_name,params=params,metrics=dct_metrics,artifacts=[])
+
 
 
