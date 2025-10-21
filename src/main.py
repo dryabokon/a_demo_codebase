@@ -1,5 +1,3 @@
-#----AAA---
-print("hello world")
 import pandas as pd
 filename_in = "./input/dataset_titanic.csv"
 folder_out = "./output/"
