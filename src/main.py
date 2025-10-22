@@ -1,5 +1,6 @@
-#---CCC---
 import pandas as pd
+import subprocess
+# ----------------------------------------------------------------------------------------------------------------------
 filename_in = "./input/dataset_titanic.csv"
 folder_out = "./output/"
 # ----------------------------------------------------------------------------------------------------------------------
@@ -7,6 +8,7 @@ import config
 import tools_ML_v2
 import tools_DF
 import tools_MLflower
+import tools_IO
 import classifier_Gauss
 # ----------------------------------------------------------------------------------------------------------------------
 config = config.cnfg_experiment()
@@ -19,15 +21,19 @@ MLFlower = tools_MLflower.MLFlower(config.host_mlflow, config.port_mlflow)
 if __name__ == '__main__':
 
     filename_in = config.patch_path(filename_in)
-
-    df = pd.read_csv(filename_in,sep='\t')
-    df = df.drop('alive', axis=1)
-    df = tools_DF.hash_categoricals(df)
+    tools_IO.remove_files(folder_out, '*.*')
+    df = tools_DF.hash_categoricals(pd.read_csv(filename_in,sep='\t').drop('alive', axis=1))
     df_metrics = ML.E2E_train_test_df(df,idx_target=0,do_charts=True,do_density=True,do_pca = True,description='')
     print(tools_DF.prettify(df_metrics))
     if MLFlower.is_available:
+        with open(folder_out + 'config.md', 'w') as f:
+            f.write(tools_DF.prettify(pd.DataFrame([(k, v) for k, v in zip(*config.get_keys_values())if k != 'parser'], columns=['param', 'value'])))
+
+        params['git_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        params['git_branch'] = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
         dct_metrics = dict(zip(df_metrics[df_metrics.columns[0]].values, df_metrics['train'].values))
-        MLFlower.save_experiment(config.experiment_name,params=params,metrics=dct_metrics,artifacts=[])
+        artifacts = [folder_out + f for f in tools_IO.get_filenames(folder_out,'*.*')]
+        MLFlower.save_experiment(config.experiment_name,params=params,metrics=dct_metrics,artifacts=artifacts)
 
 
 

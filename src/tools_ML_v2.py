@@ -325,7 +325,9 @@ class ML(object):
     def E2E_train_test_df(self,df_train,df_test=None,df_val=None,idx_target=0,do_charts=False,do_density=False,do_pca = False,idx_columns=None,description=''):
 
         if df_test is None:
-            df_train, df_test = train_test_split(df_train, test_size=0.5,shuffle=True)
+            #test_size = 0.5+(0.5-numpy.random.rand())/2
+            test_size= 0.5
+            df_train, df_test = train_test_split(df_train, test_size=test_size,shuffle=True)
 
         df_train = tools_DF.remove_dups(df_train.dropna())
         df_test = tools_DF.remove_dups(df_test.dropna())

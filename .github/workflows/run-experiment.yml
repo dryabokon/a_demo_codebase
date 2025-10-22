@@ -1,0 +1,74 @@
+name: Run Experiment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'pyproject.toml'
+      - '.github/workflows/run-experiment.yml'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  experiment:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: |
+          pip install uv
+
+      - name: Install dependencies
+        run: |
+          cd ${{ github.workspace }}
+          uv sync
+
+      - name: Start MLflow server
+        run: |
+          cd ${{ github.workspace }}/SDLC/server_mlflow
+          Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList "/c uv run mlflow server --backend-store-uri file:///D:/mlruns --default-artifact-root file:///D:/artifacts --host 0.0.0.0 --port 5000"
+          Start-Sleep -Seconds 5
+
+      - name: Run experiment
+        run: |
+          cd ${{ github.workspace }}
+          ./run_me.bat
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: experiment-results
+          path: |
+            output/
+            mlflow_artifacts/
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: experiment-logs
+          path: .
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Experiment run completed! Check artifacts for results.'
+            })
