@@ -1,0 +1,84 @@
+test_cases:
+  - id: TEST-HITL-001
+    requirement: REQ-001
+    title: PWM Motor Control 0-100%
+    hardware:
+      - Motor
+      - Oscilloscope
+      - Power supply
+    steps:
+      - Connect motor to PWM output
+      - Connect oscilloscope to PWM signal
+      - Send speed command 0%
+      - Verify PWM is 0V
+      - Send speed command 50%
+      - Verify PWM is 50% duty cycle
+      - Send speed command 100%
+      - Verify PWM is 100% duty cycle
+    pass_criteria: All PWM measurements within ±2%
+    human_decision_required: true
+
+  - id: TEST-HITL-002
+    requirement: REQ-002
+    title: Temperature Monitoring
+    hardware:
+      - Motor with temp sensor
+      - Thermometer
+      - Heating element
+    steps:
+      - Connect temperature sensor to ADC
+      - Place thermometer next to sensor
+      - Record ADC reading at 25°C
+      - Heat motor with heating element to 80°C
+      - Verify ADC reading matches ±5°C
+      - Heat to 120°C and verify again
+    pass_criteria: Temperature accuracy ±5°C across range
+    human_decision_required: true
+
+  - id: TEST-HITL-003
+    requirement: REQ-003
+    title: Safety Shutdown on Over-Temperature
+    safety_critical: true
+    hardware:
+      - Motor
+      - Heating element
+      - Oscilloscope
+    steps:
+      - Start motor at 50% speed
+      - Measure initial PWM on oscilloscope
+      - Heat motor to 120°C
+      - Observe PWM immediately go to 0%
+      - Verify shutdown time < 5ms
+    pass_criteria: PWM to 0% within 5ms of temp threshold
+    human_decision_required: true
+
+  - id: TEST-HITL-004
+    requirement: REQ-004
+    title: CAN Bus Heartbeat
+    hardware:
+      - CAN analyzer
+      - CAN bus
+    steps:
+      - Connect CAN analyzer to CAN bus
+      - Start motor
+      - Capture CAN messages for 1 second
+      - Verify message ID 0x100 every 100ms
+      - Stop motor
+      - Verify heartbeat stops within 200ms
+    pass_criteria: Heartbeat every 100ms ±10ms
+    human_decision_required: true
+
+  - id: TEST-HITL-005
+    requirement: REQ-005
+    title: State Machine Transitions
+    hardware:
+      - Motor
+      - Heating element
+    steps:
+      - System starts in IDLE
+      - Try to start motor - must succeed (temp < 110°C)
+      - Heat to 115°C
+      - Stop motor (SHUTDOWN state)
+      - Try to restart - must FAIL (safety: cannot restart from SHUTDOWN)
+    pass_criteria: State transitions match specification
+    human_decision_required: true
