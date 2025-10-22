@@ -1,0 +1,6 @@
+ReqID,Description,CodeLocation,UnitTest,IntegrationTest,HITLTest,Status
+REQ-001,PWM control,src/motor_controller.cpp:45,TEST-UT-001,TEST-IT-001,TEST-HITL-001,PLANNED
+REQ-002,Temperature read,src/motor_controller.cpp:60,TEST-UT-002,TEST-IT-001,TEST-HITL-002,PLANNED
+REQ-003,Safety shutdown,src/motor_controller.cpp:75,TEST-UT-003,TEST-IT-003,TEST-HITL-003,PLANNED
+REQ-004,CAN heartbeat,src/motor_controller.cpp:90,TEST-UT-004,TEST-IT-004,TEST-HITL-004,PLANNED
+REQ-005,State transitions,src/motor_controller.cpp:110,,TEST-IT-005,TEST-HITL-005,PLANNED
