@@ -1,4 +1,4 @@
-name: Run Titanic Experiment
+name: Run Experiment
 
 on:
   push:
@@ -7,27 +7,22 @@ on:
 jobs:
   experiment:
     runs-on: windows-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.13'
-
-      - name: Install uv
-        run: pip install uv
-
-      - name: Run experiment
-        run: |
-          cd ${{ github.workspace }}\a_demo_codebase
+      
+      - run: pip install uv
+      
+      - run: |
+          cd a_demo_codebase
+          uv sync
           uv run python src/main.py
-
-      - name: Upload results
+      
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: experiment-results
+          name: results-${{ github.run_id }}
           path: a_demo_codebase/output/
