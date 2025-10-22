@@ -1,4 +1,4 @@
-name: Run Titanic Experiment
+name: Run Experiment
 
 on:
   push:
@@ -20,8 +20,26 @@ jobs:
           uv sync
           uv run python src/main.py
 
+      - name: Save run metadata
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Save run info as JSON
+          $runInfo = @{
+            run_id = "${{ github.run_id }}"
+            run_number = "${{ github.run_number }}"
+            status = "completed"
+            branch = "${{ github.ref }}"
+            commit = "${{ github.sha }}"
+            timestamp = Get-Date -Format "o"
+          }
+          $runInfo | ConvertTo-Json | Out-File -Encoding UTF8 run_metadata.json
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: results-${{ github.run_id }}
-          path: output/
+          path: |
+            output/
+            run_metadata.json
