@@ -11,13 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
       - uses: actions/cache@v4
         with:
-          path: |
-            ~\AppData\Local\uv\cache
-            .venv
-          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-          restore-keys: uv-${{ runner.os }}-
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
 
       - run: |
           uv sync --frozen
