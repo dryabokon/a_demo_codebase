@@ -40,7 +40,9 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $latest = Get-ChildItem -Path runs/ -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          $latest = Get-ChildItem -Path runs/ -Directory |
+            Sort-Object { [int]($_.Name -replace '\D','') } -Descending |
+            Select-Object -First 1
           if ($latest) {
             echo "LATEST_RUN=$($latest.Name)" >> $env:GITHUB_ENV
           } else {
