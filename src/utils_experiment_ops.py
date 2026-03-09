@@ -34,8 +34,8 @@ class Experimentor():
     # ----------------------------------------------------------------------------------------------------------------------
     def prepare_run_artifacts(self):
         W,H = 640,480
-        image = numpy.full((H, W, 3), (127, 125, 127), dtype=numpy.uint8) #+ numpy.random.randint(0, 32,(480, 640, 3),dtype=numpy.uint8) - 32
-        image = cv2.circle(image, (H//2, W//2), int(self.config.param_a), (0, 200, 200), 2)
+        image = numpy.full((H, W, 3), (127, 125, 127), dtype=numpy.uint8) + numpy.random.randint(0, 64,(H, W, 3),dtype=numpy.uint8) - 64
+        image = cv2.circle(image, (H//2, W//2), int(self.config.param_a), (0, 200, 200), 1,lineType=cv2.LINE_AA)
         return image
     # ----------------------------------------------------------------------------------------------------------------------
     def save_run_artifacts(self,image):
