@@ -9,10 +9,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/cache@v4
         with:
-          python-version: '3.13'
+          path: |
+            ~\AppData\Local\uv\cache
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-${{ runner.os }}-
 
       - run: pip install uv
 
@@ -44,7 +46,13 @@ jobs:
             Sort-Object { [int]($_.Name -replace '\D','') } -Descending |
             Select-Object -First 1
           if ($latest) {
-            echo "LATEST_RUN=$($latest.Name)" >> $env:GITHUB_ENV
+            $artifacts = Get-ChildItem -Path $latest.FullName -File
+            $destination = Join-Path -Path "runs" -ChildPath "latest"
+            mkdir $destination -Force
+            foreach ($artifact in $artifacts) {
+              Copy-Item -Path $artifact.FullName -Destination $destination -Force
+            }
+            echo "LATEST_RUN=latest" >> $env:GITHUB_ENV
           } else {
             echo "LATEST_RUN=runs/" >> $env:GITHUB_ENV
           }
