@@ -51,4 +51,5 @@ class Experimentor():
         print(f'Chck results in {self.folder_output_current_experiment}')
         print(f'Total duration: {duration:.2f} seconds')
         return
+
     # ----------------------------------------------------------------------------------------------------------------------
