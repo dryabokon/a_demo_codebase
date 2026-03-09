@@ -10,15 +10,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/cache@v4
         with:
-          path: ~\AppData\Local\uv\cache
+          path: |
+            ~\AppData\Local\uv\cache
+            .venv
           key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
           restore-keys: uv-${{ runner.os }}-
-      - run: pip install uv
-      - run: |                             
+
+      - run: |
           uv sync --frozen
-          uv run python src/main.py
+          .venv\Scripts\python src/main.py
 
       - name: Save run metadata
         if: always()
@@ -55,10 +58,14 @@ jobs:
             echo "LATEST_RUN=runs/" >> $env:GITHUB_ENV
           }
 
+      - name: Zip run metadata and run artifacts
+        if: always()
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "runs/${{ env.LATEST_RUN }}/*", "run_metadata.json" -DestinationPath "results-${{ github.run_id }}.zip"
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: results-${{ github.run_id }}
-          path: |
-            runs/${{ env.LATEST_RUN }}
-            run_metadata.json
+          path: results-${{ github.run_id }}.zip
