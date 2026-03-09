@@ -32,12 +32,22 @@ class Experimentor():
 
         return self.folder_output_current_experiment
     # ----------------------------------------------------------------------------------------------------------------------
+    def prepare_run_artifacts(self):
+        W,H = 640,480
+        image = numpy.full((H, W, 3), (127, 125, 127), dtype=numpy.uint8) #+ numpy.random.randint(0, 32,(480, 640, 3),dtype=numpy.uint8) - 32
+        image = cv2.circle(image, (H//2, W//2), int(self.config.param_a), (0, 0, 200), 2)
+        return image
+    # ----------------------------------------------------------------------------------------------------------------------
+    def save_run_artifacts(self,image):
+        cv2.imwrite(self.folder_output_current_experiment + 'image.png', image)
+        return
+    # ----------------------------------------------------------------------------------------------------------------------
     def run_experiment(self):
         start_time = time.time()
-        image = numpy.full((480, 640, 3), (127,125,127), dtype=numpy.uint8) + numpy.random.randint(0, 32, (480, 640, 3), dtype=numpy.uint8) - 32
-        cv2.imwrite(self.folder_output_current_experiment + 'image.png', image)
-        end_time = time.time()
-        duration = end_time - start_time
+        image = self.prepare_run_artifacts()
+        self.save_run_artifacts(image)
+
+        duration = time.time() - start_time
         print(f'Chck results in {self.folder_output_current_experiment}')
         print(f'Total duration: {duration:.2f} seconds')
         return
